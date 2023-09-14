@@ -13,7 +13,6 @@ clean :
 	rm -rf matrix_cilk matrix_cilk_bs* matrix_cilk_rs* matrix_cilk_vec*
 	rm -rf matrix_cilk_avx512_bs*
 	rm -rf matrix_mkl/build
-	rm -rf avx*
 
 sysinfo :
 	@if command -v neofetch >/dev/null 2>&1;	then \
@@ -194,19 +193,14 @@ cilk_avx: matrix_cilk_avx.c
 		exit 1; \
 	fi
 
-	@for avxsize in "512"; \
+	@for bsize in "32" "64" "128" "256" "512" "1024" "2048"; \
 	do \
-		for  avxtype in "double"; \
-		do \
-			bsize="1024"; \
-			nbin="avx$${avxsize}_$${avxtype}"; \
-			$(CC) matrix_cilk_avx.c -O2 -D ni=${MSIZE} -D THRESHOLD=$${bsize} \
-				-D AVX_SIZE=$${avxsize} -D AVX_TYPE=$${avxtype} \
-				-march=native  -ffast-math -mavx512f -mavx512cd -fopencilk -o ./$${nbin}; \
-			ntimes=($$(./$${nbin}) $$(./$${nbin}) $$(./$${nbin})); \
-			ntime=$$(echo $${ntimes} | awk 'BEGIN{min = 65535} {if ($$1 < min) min = $$1;fi} END{printf "Min = %.6f\n",min}'); \
-			echo "block$${bsize}_$${avxtype}_$${avxsize}: $${ntime}"; \
-		done \
+		nbin="matrix_cilk_avx512_bs$${bsize}"; \
+		$(CC) matrix_cilk_avx.c -O2 -D ni=${MSIZE} -D THRESHOLD=$${bsize} \
+			-march=native  -ffast-math -mavx512f -mavx512cd -fopencilk -o ./$${nbin}; \
+		ntimes=($$(./$${nbin}) $$(./$${nbin}) $$(./$${nbin})); \
+		ntime=$$(echo $${ntimes} | awk 'BEGIN{min = 65535} {if ($$1 < min) min = $$1;fi} END{printf "Min = %.6f\n",min}'); \
+		echo "block$${bsize}: $${ntime}"; \
 	done
 	
 cilk_mkl:
