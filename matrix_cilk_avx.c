@@ -25,20 +25,37 @@ AVX_TYPE A[ni][ni];
 AVX_TYPE B[ni][ni];
 AVX_TYPE C[ni][ni];
 
-void set_param_type() {
 #if (AVX_TYPE == double) && (AVX_SIZE == 512)
 #define PARAM_TYPE __m512d
 #define LOAD_FUNC _mm512_load_pd
 #define ADD_FUNC _mm512_fmadd_pd
 #define STORE_FUNC _mm512_store_pd
+//#endif
 
-#elif (AVX_TYPE == int) && (AVX_SIZE == 512)
+#elif (AVX_TYPE == float) && (AVX_SIZE == 512)
+#define PARAM_TYPE __m512
+#define LOAD_FUNC _mm512_load_ps
+#define ADD_FUNC _mm512_fmadd_ps
+#define STORE_FUNC _mm512_store_ps
+//#endif
+
 #elif (AVX_TYPE == double) && (AVX_SIZE == 256)
-#elif (AVX_TYPE == int) && (AVX_SIZE == 256)
-#elif (AVX_TYPE == double) && (AVX_SIZE == 128)
-#elif (AVX_TYPE == int) && (AVX_SIZE == 128)
+#define PARAM_TYPE __m256d
+#define LOAD_FUNC _mm256_load_pd
+#define ADD_FUNC _mm256_fmadd_pd
+#define STORE_FUNC _mm256_store_pd
+
+#elif (AVX_TYPE == float) && (AVX_SIZE == 256)
+#define PARAM_TYPE __m256
+#define LOAD_FUNC _mm256_load_ps 
+#define ADD_FUNC _mm256_fmadd_ps 
+#define STORE_FUNC _mm256_store_ps
 #endif
-}
+
+#if (AVX_TYPE == double) && (AVX_SIZE == 128)
+#if (AVX_TYPE == float) && (AVX_SIZE == 128)
+#endif
+#endif
 
 float tdiff(struct timeval *start, struct timeval *end)
 {

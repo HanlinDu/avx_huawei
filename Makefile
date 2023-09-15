@@ -194,9 +194,9 @@ cilk_avx: matrix_cilk_avx.c
 		exit 1; \
 	fi
 
-	@for avxsize in "512"; \
+	@for avxsize in "512" "256"; \
 	do \
-		for  avxtype in "double"; \
+		for  avxtype in "double" "float"; \
 		do \
 			bsize="1024"; \
 			nbin="avx$${avxsize}_$${avxtype}"; \
