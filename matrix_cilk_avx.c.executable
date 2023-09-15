@@ -26,7 +26,12 @@ AVX_TYPE B[ni][ni];
 AVX_TYPE C[ni][ni];
 
 //#define MATRIX_STEP (AVX_TYPE == double ? AVX_SIZE >> 6 : AVX_SIZE >> 5)
-#define MATRIX_STEP (AVX_SIZE / (sizeof(AVX_TYPE)*8))
+#if (AVX_TYPE == double)
+#define MATRIX_STEP (AVX_SIZE >> 6)
+#endif
+#if (AVX_TYPE == float)
+#define MATRIX_STEP (AVX_SIZE >> 5)
+#endif
 
 #if (AVX_TYPE == double) && (AVX_SIZE == 512)
 #define PARAM_TYPE __m512d
