@@ -195,14 +195,18 @@ cilk_avx: matrix_cilk_avx.c
 	fi
 
 	@echo "Warning: you have turned off the compile warnings."
-	@for avxsize in "512" "256"; \
+	@for avxsize in "512" "256" "128"; \
 	do \
-		for  avxtype in "double" "float"; \
+		for  avxdouble in "1" "0"; \
 		do \
+			avxtype="single"; \
+			if [ $${avxdouble} -eq 1 ]; then \
+				avxtype="double"; \
+			fi; \
 			bsize="1024"; \
 			nbin="avx$${avxsize}_$${avxtype}"; \
 			$(CC) matrix_cilk_avx.c -O2 -D ni=${MSIZE} -D THRESHOLD=$${bsize} \
-				-D AVX_SIZE=$${avxsize} -D AVX_TYPE=$${avxtype} -w \
+				-D AVX_SIZE=$${avxsize} -D AVX_IS_DOUBLE=$${avxdouble} -w \
 				-march=native  -ffast-math -mavx512f -mavx512cd -fopencilk -o ./$${nbin}; \
 			ntimes=($$(./$${nbin}) $$(./$${nbin}) $$(./$${nbin})); \
 			ntime=$$(echo $${ntimes} | awk 'BEGIN{min = 65535} {if ($$1 < min) min = $$1;fi} END{printf "Min = %.6f\n",min}'); \
